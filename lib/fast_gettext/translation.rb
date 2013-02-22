@@ -18,7 +18,9 @@ module FastGettext
     end
 
     def _(key)
-      FastGettext.cached_find(key) or key
+      translation = FastGettext.cached_find(key)
+      raise Exception, ["Missing Translation", key, FastGettext.locale] unless translation
+      translation
     end
 
     #translate pluralized
