@@ -19,7 +19,17 @@ module FastGettext
 
     def _(key)
       translation = FastGettext.cached_find(key)
-      raise Exception, ["Missing Translation", key, FastGettext.locale] unless translation
+      unless translation
+        FastGettext.missing_translation_callback[:model_name].constantize.send(FastGettext.missing_translation_callback[:function_name], key, FastGettext.locale) if FastGettext.missing_translation_callback
+        if FastGettext.default_locale && FastGettext.default_locale.to_sym != FastGettext.locale.to_sym
+          locale = FastGettext.locale
+          FastGettext.locale = FastGettext.default_locale
+          translation = _(key)
+          FastGettext.locale = locale
+        else
+          translation = key
+        end
+      end
       translation
     end
 

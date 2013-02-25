@@ -35,8 +35,59 @@ describe FastGettext::Translation do
       _('Untranslated').should_not == ''
     end
 
-    it "returns key if not translation was found" do
-      _('NOT|FOUND').should == 'NOT|FOUND'
+    context "translation not found" do
+      context "there is callback" do
+        before do
+          FastGettext.default_locale = "en"
+          FastGettext.locale = "en"
+          FastGettext.missing_translation_callback = { :model_name => 'MissingTranslation', :function_name => 'record' }
+        end
+
+        after do
+          FastGettext.missing_translation_callback = nil
+        end
+
+        it "calls missing_translation_callback method" do
+          model_mock = mock()
+          model_mock.should_receive(:send).with('function_name', 'text', 'en')
+          model_name_mock = mock()
+          model_name_mock.should_receive(:constantize).and_return(model_mock)
+          function_info_mock = mock()
+          function_info_mock.should_receive(:[]).with(:model_name).and_return(model_name_mock)
+          function_info_mock.should_receive(:[]).with(:function_name).and_return('function_name')
+          FastGettext.should_receive(:missing_translation_callback).exactly(3).times.and_return(function_info_mock)
+
+          _("text")
+        end
+      end
+
+      context "there is default translation" do
+        context "current locale is default locale" do
+          before do
+            FastGettext.default_locale = "en"
+            FastGettext.locale = "en"
+          end
+          it "return the key" do
+             _("text").should == "text"
+          end
+        end
+
+        context "current locale is not default locale" do
+          before do
+            FastGettext.default_locale = "en"
+            FastGettext.locale = "de"
+          end
+          it "return translation in default locale" do
+              _("text_key").should == "English Text"
+          end
+        end
+      end
+
+      context "there is no default translation" do
+        it "return the key" do
+          _("text").should == "text"
+         end
+      end
     end
 
     it "does not return the gettext meta information" do

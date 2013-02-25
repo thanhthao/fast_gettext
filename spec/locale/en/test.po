@@ -57,3 +57,6 @@ msgstr ""
 #: locale/testlog_phrases.rb:2
 msgid "this is a dynamic translation which was found thorugh gettext_test_log!"
 msgstr ""
+
+msgid "text_key"
+msgstr "English Text"

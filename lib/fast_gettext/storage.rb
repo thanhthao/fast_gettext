@@ -143,6 +143,16 @@ module FastGettext
       @@default_locale
     end
 
+    @@missing_translation_callback = nil
+    def missing_translation_callback=(function_info)
+      @@missing_translation_callback = function_info
+      update_current_cache
+    end
+
+    def missing_translation_callback
+      @@missing_translation_callback
+    end
+
     #Opera: de-DE,de;q=0.9,en;q=0.8
     #Firefox de-de,de;q=0.8,en-us;q=0.5,en;q=0.3
     #IE6/7 de

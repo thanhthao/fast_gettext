@@ -92,6 +92,16 @@ describe 'Storage' do
     end
   end
 
+  describe :missing_translation_callback do
+    it "should store function info" do
+      function_info = { :model_name => 'ModelName', :function_name => 'function' }
+      self.missing_translation_callback = function_info
+      self.missing_translation_callback.should == function_info
+      self.missing_translation_callback = nil
+      self.missing_translation_callback.should == nil
+    end
+  end
+
   describe :default_text_domain do
     it "stores default_text_domain non-thread-safe" do
       thread_save(:default_text_domain, 'xx', 'en').should == false
